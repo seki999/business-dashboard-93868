@@ -172,9 +172,42 @@ GitHub Actions は `.github/workflows/ci.yml` で checkout、Python setup、depe
 
 `infra/aws/` に sample CloudFormation skeleton を用意しています。想定構成は ALB、ECS Fargate または App Runner、RDS PostgreSQL、S3、CloudWatch、Secrets Manager です。実 AWS アカウントや key は不要です。
 
-詳細は [docs/architecture.md](docs/architecture.md) と [infra/aws/README.md](infra/aws/README.md) を参照してください。
+```mermaid
+flowchart TB
+  User["User / Browser"] --> CF["CloudFront"]
+  CF --> S3["S3 Frontend Bucket"]
 
-Terraform 版 sample は [infra/aws/terraform/](infra/aws/terraform/) にあります。Frontend は S3 + CloudFront、Backend は ECS Fargate + ALB、さらに VPC/subnet/gateway、security group、IAM、CloudWatch、Lambda、SQS、EventBridge、GitHub Actions OIDC deploy role を含みます。
+  User --> ALB["Application Load Balancer"]
+  ALB --> ECS["ECS Fargate Backend"]
+
+  subgraph VPC["VPC"]
+    subgraph Public["Public Subnets"]
+      ALB
+      NAT["NAT Gateway"]
+      IGW["Internet Gateway"]
+    end
+
+    subgraph Private["Private Subnets"]
+      ECS
+      Lambda["Lambda Worker"]
+    end
+  end
+
+  ECS --> SQS["SQS Queue"]
+  SQS --> DLQ["SQS Dead Letter Queue"]
+  EventBridge["EventBridge Schedule"] --> SQS
+  SQS --> Lambda
+
+  ECS --> CW["CloudWatch Logs / Metrics / Alarms"]
+  Lambda --> CW
+
+  GitHub["GitHub Actions OIDC"] --> IAM["IAM Deploy Role"]
+  IAM --> ECR["ECR Backend Image"]
+  IAM --> S3
+  IAM --> ECS
+```
+
+詳細は [docs/architecture.md](docs/architecture.md) と [infra/aws/README.md](infra/aws/README.md) を参照してください。
 
 ## セキュリティ考慮
 
@@ -212,6 +245,5 @@ npx playwright test
 - Alembic による migration 管理
 - CSV import/export
 - 構造化 JSON logging と CloudWatch metrics
-- Terraform 版 AWS sample
 - OpenAPI client generation
 - Playwright E2E の CI 組み込み
