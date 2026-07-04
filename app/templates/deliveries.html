@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-header">
+  <div><p class="eyebrow">Delivery Management</p><h1>配送データ一覧</h1></div>
+  <a class="button" href="/api/deliveries">API JSON</a>
+</header>
+<section>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Area</th><th>Scheduled</th><th>Status</th><th>Assignee</th><th>Note</th></tr>
+    </thead>
+    <tbody>
+      {% for delivery in deliveries %}
+      <tr>
+        <td>{{ delivery.delivery_code }}</td>
+        <td>{{ delivery.area }}</td>
+        <td>{{ delivery.scheduled_date }}</td>
+        <td><span class="badge">{{ delivery.status }}</span></td>
+        <td>{{ delivery.assignee }}</td>
+        <td>{{ delivery.note or "-" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

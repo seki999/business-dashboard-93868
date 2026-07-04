@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-header">
+  <div><p class="eyebrow">Customer Feedback</p><h1>顧客フィードバック一覧</h1></div>
+  <a class="button" href="/api/feedbacks">API JSON</a>
+</header>
+<section>
+  <table>
+    <thead><tr><th>ID</th><th>Type</th><th>Content</th><th>Priority</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for feedback in feedbacks %}
+      <tr>
+        <td>{{ feedback.feedback_code }}</td>
+        <td>{{ feedback.feedback_type }}</td>
+        <td>{{ feedback.content }}</td>
+        <td><span class="badge priority">{{ feedback.priority }}</span></td>
+        <td>{{ feedback.response_status }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

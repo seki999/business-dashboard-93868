@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-header">
+  <div>
+    <p class="eyebrow">Portfolio Sample</p>
+    <h1>社内業務改善・宅配データ管理ダッシュボード</h1>
+  </div>
+  <a class="button" href="/api/dashboard">API JSON</a>
+</header>
+
+<section class="metrics">
+  <article><span>本日注文数</span><strong>{{ summary.today_orders }}</strong></article>
+  <article><span>配送予定件数</span><strong>{{ summary.scheduled_deliveries }}</strong></article>
+  <article><span>問い合わせ件数</span><strong>{{ summary.feedback_count }}</strong></article>
+  <article><span>改善タスク件数</span><strong>{{ summary.open_tasks }}</strong></article>
+  <article><span>低在庫アラート</span><strong>{{ summary.low_stock_count }}</strong></article>
+</section>
+
+<section class="split">
+  <div>
+    <h2>バッチステータス</h2>
+    <p class="status {{ summary.batch_status }}">{{ summary.batch_status }}</p>
+    <button class="button" data-run-batch>Run Batch</button>
+    <pre id="batch-result" class="result">待機中</pre>
+  </div>
+  <div>
+    <h2>最近のエラー・警告ログ</h2>
+    <table>
+      <thead><tr><th>Level</th><th>Type</th><th>Message</th></tr></thead>
+      <tbody>
+        {% for log in summary.recent_logs %}
+        <tr><td>{{ log.level }}</td><td>{{ log.log_type }}</td><td>{{ log.message }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

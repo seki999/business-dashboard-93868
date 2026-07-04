@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-header">
+  <div><p class="eyebrow">Improvement Tasks</p><h1>業務改善タスク一覧</h1></div>
+  <a class="button" href="/api/improvement-tasks">API JSON</a>
+</header>
+<section>
+  <table>
+    <thead><tr><th>ID</th><th>Title</th><th>Department</th><th>Priority</th><th>Status</th><th>Due</th></tr></thead>
+    <tbody>
+      {% for task in tasks %}
+      <tr>
+        <td>{{ task.task_code }}</td>
+        <td>{{ task.title }}</td>
+        <td>{{ task.department }}</td>
+        <td><span class="badge priority">{{ task.priority }}</span></td>
+        <td>{{ task.progress_status }}</td>
+        <td>{{ task.due_date }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,210 +1,215 @@
-# ai-machine-research-workbench
+# Sample Business Dashboard
 
-## プロジェクト概要
+社内業務改善・宅配データ管理ダッシュボードの portfolio sample です。配送データ、商品データ、顧客フィードバック、業務改善タスク、バッチ実行結果、運用ログを管理・可視化する Web アプリケーションとして実装しています。
 
-`ai-machine-research-workbench` は、機械設備向け AI システム開発前の技術検証 PoC です。  
-温度、振動、圧力、電流、回転数などの模擬センサーデータを生成し、Python と scikit-learn による異常検知、FastAPI による推論 API、Streamlit による検証 Dashboard、Markdown による技術検証レポート作成までを一通り確認できます。
+このリポジトリは技術力説明用の sample であり、実在する会社名、サービス名、顧客名、機関名、機密情報、実業務データは含みません。AWS、CI/CD、DB、Docker は案件関連技術方向を示すための構成例です。
 
-本プロジェクトは、研究開発機関における「AI システム開発 / リサーチエンジニア」業務を想定し、Linux 環境構築、AI 技術検証、PoC 実装、検証資料作成の流れを展示する sample です。
+## 対応技術スタック
 
-## 想定業務との関連性
+案件で明示された技術:
 
-- Python を用いたデータ処理、モデル学習、推論処理の実装
-- Linux / Ubuntu 環境での開発、実行、Docker 化
-- AI 技術導入前のアルゴリズム選定、評価、課題整理
-- FastAPI による AI 推論 API のプロトタイプ構築
-- Streamlit による研究・検証用 Dashboard 作成
-- Markdown による技術調査メモ、検証計画、検証レポート整理
+- Python によるサーバーサイド開発
+- AWS を想定したインフラ設計
+- GitHub / GitHub Actions による CI/CD
+- Git ベースのソース管理
+- PostgreSQL / MySQL を想定した DB 設計
+- Docker によるローカル開発環境
+- 要求分析、仕様策定、機能設計、保守、運用
+- 社内業務改善、宅配・流通データ管理、業務自動化
 
-## 技術スタック
+sample 完整性のために追加した技術:
 
-- Python 3.11+
-- FastAPI / Uvicorn
-- scikit-learn
-- pandas / numpy
-- matplotlib
-- Streamlit
+- FastAPI
+- Jinja2 + simple JavaScript
+- SQLAlchemy
 - pytest
-- Docker / Docker Compose
-- Makefile
-- GitHub Actions
-- YAML 設定ファイル
-- logging
+- ruff / mypy
+- Playwright screenshot script
 
-## システム構成図
+## システム構成
 
 ```mermaid
 flowchart LR
-    A["scripts/generate_sensor_data.py<br/>模擬センサーデータ生成"] --> B["data/raw/sensor_data.csv"]
-    B --> C["src/data/preprocess.py<br/>前処理・標準化"]
-    C --> D["data/processed/"]
-    D --> E["src/models/train.py<br/>IsolationForest 学習"]
-    E --> F["models/anomaly_detector.pkl"]
-    E --> G["reports/metrics.json"]
-    F --> H["FastAPI 推論 API"]
-    F --> I["Streamlit Dashboard"]
-    G --> J["scripts/generate_report.py<br/>検証レポート生成"]
+  Browser["Browser"] --> FastAPI["FastAPI Web/API"]
+  FastAPI --> Services["Dashboard / Batch / Log Services"]
+  Services --> DB["PostgreSQL default / MySQL adaptable"]
+  FastAPI --> Templates["Jinja2 Templates"]
+  CI["GitHub Actions"] --> Tests["ruff + pytest + Docker build"]
 ```
+
+## 主な機能
+
+- ダッシュボード KPI: 本日注文数、配送予定件数、問い合わせ件数、改善タスク件数、低在庫アラート
+- 配送データ管理: 配送 ID、エリア、予定日、ステータス、担当者、備考
+- 商品データ管理: 商品 ID、商品名、カテゴリ、在庫数、公開ステータス
+- 顧客フィードバック管理: 種別、内容、優先度、対応ステータス
+- 業務改善タスク管理: タイトル、担当部署、優先度、進捗、期限
+- バッチ処理: 遅延配送、低在庫、高優先度フィードバック、期限超過タスクを集計
+- 保守運用: health check、application log、batch log、logs page、error handling
 
 ## ディレクトリ構成
 
 ```text
-.
-├── app/
-├── config/
-├── data/
-│   ├── processed/
-│   └── raw/
-├── docs/
-├── models/
-├── reports/
-│   └── figures/
-├── scripts/
-├── src/
-│   ├── api/
-│   ├── data/
-│   └── models/
-├── tests/
-├── .github/workflows/
+sample-business-dashboard/
+├── app/                  # FastAPI app, routers, services, DB models, templates
+├── tests/                # pytest and Playwright screenshot spec
+├── docs/                 # architecture, technical design, setup
+├── infra/                # PostgreSQL init and AWS sample config
+├── screenshots/          # README screenshot placeholders
+├── .github/workflows/    # GitHub Actions CI
 ├── Dockerfile
 ├── docker-compose.yml
-├── Makefile
-└── requirements.txt
+├── pyproject.toml
+└── README.md
 ```
 
-## Linux 環境でのセットアップ手順
+詳細は [docs/project-structure.md](docs/project-structure.md) を参照してください。
+
+## ローカル実行
 
 ```bash
-sudo apt update
-sudo apt install -y python3.11 python3.11-venv make
-python3.11 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install ".[dev]"
+uvicorn app.main:app --reload
 ```
 
-または Makefile を利用します。
+Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install --upgrade pip
+pip install ".[dev]"
+uvicorn app.main:app --reload
+```
+
+起動後に `http://localhost:8000` を開きます。
+
+## Docker 実行
 
 ```bash
-make setup
+docker compose up --build
 ```
 
-## Docker Compose での起動方法
+- App: `http://localhost:8000`
+- Adminer: `http://localhost:8080`
+- PostgreSQL: `localhost:5432`
+
+`.env.example` は sample 設定です。実 secret は `.env` に置き、Git にコミットしません。
+
+## API
+
+- `GET /api/health`
+- `GET /api/dashboard`
+- `GET /api/deliveries`, `POST /api/deliveries`
+- `GET /api/products`, `POST /api/products`
+- `GET /api/feedbacks`, `POST /api/feedbacks`
+- `GET /api/improvement-tasks`, `POST /api/improvement-tasks`
+- `POST /api/batch/run`
+- `GET /api/logs`
+
+## DB 設計
+
+```mermaid
+erDiagram
+  DELIVERIES {
+    int id PK
+    string delivery_code UK
+    string area
+    date scheduled_date
+    string status
+    string assignee
+    text note
+  }
+  PRODUCTS {
+    int id PK
+    string product_code UK
+    string name
+    string category
+    int stock_quantity
+    string publish_status
+  }
+  FEEDBACKS {
+    int id PK
+    string feedback_code UK
+    string feedback_type
+    text content
+    string priority
+    string response_status
+  }
+  IMPROVEMENT_TASKS {
+    int id PK
+    string task_code UK
+    string title
+    string department
+    string priority
+    string progress_status
+    date due_date
+  }
+  OPERATION_LOGS {
+    int id PK
+    string log_type
+    string level
+    text message
+    datetime created_at
+  }
+```
+
+デフォルト Docker DB は PostgreSQL です。MySQL に切り替える場合は MySQL driver を追加し、`DATABASE_URL` を `mysql+pymysql://user:password@db:3306/database` 形式へ変更します。
+
+## テスト
 
 ```bash
-make docker-up
+pytest
+ruff check .
 ```
 
-FastAPI:
+GitHub Actions は `.github/workflows/ci.yml` で checkout、Python setup、dependency install、lint、unit test、Docker image build を実行します。
 
-```text
-http://localhost:8000/docs
-```
+## AWS 想定
 
-Streamlit Dashboard:
+`infra/aws/` に sample CloudFormation skeleton を用意しています。想定構成は ALB、ECS Fargate または App Runner、RDS PostgreSQL、S3、CloudWatch、Secrets Manager です。実 AWS アカウントや key は不要です。
 
-```text
-http://localhost:8501
-```
+詳細は [docs/architecture.md](docs/architecture.md) と [infra/aws/README.md](infra/aws/README.md) を参照してください。
 
-停止:
+## セキュリティ考慮
+
+- real secret をコミットしない
+- `.env.example` のみを共有し、`.env` は `.gitignore` で除外
+- DB 接続情報は環境変数で管理
+- Pydantic による入力値検証
+- 重複登録などは業務エラーとして制御
+- 想定外エラーは内部詳細をレスポンスに出さない
+- AWS key を hard code しない
+
+## スクリーンショット
+
+README 掲載用の placeholder を `screenshots/` に配置しています。実画面で更新する場合:
 
 ```bash
-make docker-down
+docker compose up --build
+npm init -y
+npm i -D @playwright/test
+npx playwright install chromium
+npx playwright test
 ```
 
-## データ生成方法
+参照画像:
 
-```bash
-make generate-data
-```
+![Dashboard](screenshots/01-dashboard.png)
+![Deliveries](screenshots/02-deliveries.png)
+![Detail](screenshots/03-detail.png)
+![Batch Result](screenshots/04-batch-result.png)
+![Logs](screenshots/05-logs.png)
 
-出力先:
+## 今後の拡張方向
 
-```text
-data/raw/sensor_data.csv
-```
-
-## モデル学習方法
-
-```bash
-make train
-```
-
-出力:
-
-- `models/anomaly_detector.pkl`
-- `reports/metrics.json`
-- `reports/figures/sensor_trends.png`
-- `reports/figures/anomaly_scatter.png`
-
-## API 起動方法
-
-```bash
-make api
-```
-
-推論 API 例:
-
-```bash
-curl -X POST http://localhost:8000/predict \
-  -H "Content-Type: application/json" \
-  -d '{"temperature":75.0,"vibration":1.2,"pressure":101.0,"current":12.0,"rpm":1500}'
-```
-
-## Streamlit Dashboard 起動方法
-
-```bash
-make dashboard
-```
-
-Dashboard では、センサーデータの推移、異常点、評価結果、CSV アップロードによる異常検知を確認できます。
-
-## テスト実行方法
-
-```bash
-make test
-```
-
-## 検証レポート生成方法
-
-```bash
-make report
-```
-
-出力先:
-
-```text
-reports/ai_validation_report.md
-```
-
-## 実行画面イメージ
-
-### 1. FastAPI Swagger UI
-
-![FastAPI Swagger UI](docs/images/01_fastapi_swagger.png)
-
-### 2. Health Check Endpoint
-
-![Health Check Endpoint](docs/images/02_health_endpoint.png)
-
-### 3. Predict API 実行結果
-
-![Predict API Response](docs/images/03_predict_response.png)
-
-### 4. Streamlit Dashboard 概要
-
-![Streamlit Dashboard Overview](docs/images/04_streamlit_dashboard_overview.png)
-
-### 5. Streamlit Dashboard グラフ表示
-
-![Streamlit Dashboard Charts](docs/images/05_streamlit_dashboard_charts.png)
-
-## 今後の改善案
-
-- 実機データを利用した閾値設計と評価
-- 時系列モデルによる故障予兆検知
-- MLflow などによる実験管理
-- API 認証、監視、モデルバージョン管理
-- Docker Compose から Kubernetes への移行検討
-- 現場ヒアリング結果を反映した異常理由説明ロジックの改善
+- 認証 / 認可、部署別 RBAC
+- Alembic による migration 管理
+- CSV import/export
+- 構造化 JSON logging と CloudWatch metrics
+- Terraform 版 AWS sample
+- OpenAPI client generation
+- Playwright E2E の CI 組み込み

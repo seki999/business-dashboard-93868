@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-header">
+  <div><p class="eyebrow">Product Management</p><h1>商品データ一覧</h1></div>
+  <a class="button" href="/api/products">API JSON</a>
+</header>
+<section>
+  <table>
+    <thead><tr><th>ID</th><th>Name</th><th>Category</th><th>Stock</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for product in products %}
+      <tr>
+        <td>{{ product.product_code }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.category }}</td>
+        <td>{{ product.stock_quantity }}</td>
+        <td><span class="badge">{{ product.publish_status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

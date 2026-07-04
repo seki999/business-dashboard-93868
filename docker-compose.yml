@@ -1,21 +1,42 @@
 services:
-  api:
+  app:
     build: .
-    command: >
-      sh -c "python scripts/generate_sensor_data.py
-      && python -m src.models.train
-      && uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload"
+    container_name: sample-business-dashboard-app
+    env_file:
+      - .env.example
+    environment:
+      DATABASE_URL: postgresql+psycopg://app_user:app_password@db:5432/business_dashboard
     ports:
       - "8000:8000"
-    volumes:
-      - .:/workspace
-
-  dashboard:
-    build: .
-    command: streamlit run app/streamlit_app.py --server.address 0.0.0.0 --server.port 8501
-    ports:
-      - "8501:8501"
-    volumes:
-      - .:/workspace
     depends_on:
-      - api
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    container_name: sample-business-dashboard-db
+    environment:
+      POSTGRES_DB: business_dashboard
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: app_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d business_dashboard"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  adminer:
+    image: adminer:4
+    container_name: sample-business-dashboard-adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

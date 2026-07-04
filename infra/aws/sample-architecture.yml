@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Sample neutral AWS architecture for a portfolio dashboard. No real secrets.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: sample-business-dashboard
+
+Resources:
+  AppLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/sample/${ProjectName}/app"
+      RetentionInDays: 14
+
+  BatchLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/sample/${ProjectName}/batch"
+      RetentionInDays: 14
+
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  DatabaseSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub "/sample/${ProjectName}/database"
+      Description: Placeholder secret definition for DB connection. Do not store real values in Git.
+      GenerateSecretString:
+        SecretStringTemplate: '{"username":"app_user"}'
+        GenerateStringKey: "password"
+        PasswordLength: 24
+        ExcludePunctuation: true
+
+Outputs:
+  LogGroupName:
+    Description: CloudWatch Logs group for application logs.
+    Value: !Ref AppLogGroup
+  ArtifactBucketName:
+    Description: S3 bucket for generated reports or screenshots.
+    Value: !Ref ArtifactBucket

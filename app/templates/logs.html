@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-header">
+  <div><p class="eyebrow">Monitoring</p><h1>監視・運用ログ</h1></div>
+  <a class="button" href="/api/logs">API JSON</a>
+</header>
+<section>
+  <table>
+    <thead><tr><th>Time</th><th>Level</th><th>Type</th><th>Message</th></tr></thead>
+    <tbody>
+      {% for log in logs %}
+      <tr><td>{{ log.created_at }}</td><td>{{ log.level }}</td><td>{{ log.log_type }}</td><td>{{ log.message }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

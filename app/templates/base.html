@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ title or "Sample Business Dashboard" }}</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">Business Dashboard</div>
+      <nav>
+        <a class="{{ 'active' if active == 'dashboard' else '' }}" href="/">Dashboard</a>
+        <a class="{{ 'active' if active == 'deliveries' else '' }}" href="/deliveries">Deliveries</a>
+        <a class="{{ 'active' if active == 'products' else '' }}" href="/products">Products</a>
+        <a class="{{ 'active' if active == 'feedbacks' else '' }}" href="/feedbacks">Feedbacks</a>
+        <a class="{{ 'active' if active == 'tasks' else '' }}" href="/tasks">Tasks</a>
+        <a class="{{ 'active' if active == 'batch' else '' }}" href="/batch">Batch</a>
+        <a class="{{ 'active' if active == 'logs' else '' }}" href="/logs">Logs</a>
+      </nav>
+    </aside>
+    <main class="content">
+      {% block content %}{% endblock %}
+    </main>
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>
