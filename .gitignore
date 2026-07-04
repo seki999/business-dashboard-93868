@@ -8,6 +8,10 @@ __pycache__/
 *.egg-info/
 test_dashboard.db
 sample_dashboard.db
+.terraform/
+*.tfstate
+*.tfstate.*
+infra/aws/terraform/*.zip
 htmlcov/
 .coverage
 dist/

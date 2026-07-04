@@ -1,12 +1,12 @@
 # Architecture
 
-本プロジェクトは portfolio sample であり、実在する会社名・顧客名・機関名・機密情報・実業務データを含みません。
+This project is a portfolio sample. It does not include real company names, real customer names, real public-sector names, confidential information, or production business data.
 
-## システム構成図
+## Local Application Architecture
 
 ```mermaid
 flowchart LR
-  User["社内利用者"] --> Web["FastAPI + Jinja2 Web UI"]
+  User["Internal User"] --> Web["FastAPI + Jinja2 Web UI"]
   Web --> API["REST API Routers"]
   API --> Service["Service Layer"]
   Service --> DB["PostgreSQL / MySQL compatible DB"]
@@ -14,15 +14,15 @@ flowchart LR
   Batch["Manual Batch API"] --> Service
 ```
 
-## コンポーネント説明
+## Components
 
-- Web UI: ダッシュボード、配送、商品、フィードバック、改善タスク、バッチ、ログ画面を表示します。
-- REST API: `/api/*` の JSON API を提供し、画面以外の連携にも使える構成にしています。
-- Service Layer: 集計、バッチ、ログ記録などの業務ロジックを router から分離します。
-- DB: SQLAlchemy により PostgreSQL を標準、MySQL も接続 URL 変更で想定できます。
-- Batch: API から手動実行できる日次処理サンプルです。
+- Web UI: dashboard, deliveries, products, feedbacks, improvement tasks, batch, and logs pages.
+- REST API: JSON endpoints under `/api/*` for system integration and testing.
+- Service Layer: dashboard aggregation, batch processing, and operation logging.
+- DB: SQLAlchemy models designed for PostgreSQL by default and MySQL adaptation by connection URL/driver change.
+- Batch: manually triggered daily business automation sample.
 
-## データフロー
+## API Flow
 
 ```mermaid
 sequenceDiagram
@@ -31,35 +31,49 @@ sequenceDiagram
   participant S as Service
   participant D as Database
   U->>W: Dashboard request
-  W->>S: 集計取得
-  S->>D: 配送・商品・FB・タスク・ログ集計
-  D-->>S: 集計結果
+  W->>S: Request summary
+  S->>D: Aggregate deliveries, products, feedbacks, tasks, logs
+  D-->>S: Aggregated data
   S-->>W: Summary
   W-->>U: HTML or JSON
 ```
 
-## API 流れ
+## Terraform AWS Sample
 
-入力値は Pydantic schema で検証し、重複登録などの業務エラーは `BusinessRuleError` で統一的に処理します。想定外エラーはログに残し、レスポンスでは内部詳細を返しません。
-
-## AWS 配置想定
+`infra/aws/terraform/` provides a fuller AWS sample architecture for portfolio demonstration.
 
 ```mermaid
 flowchart TB
-  Client["Internal Users"] --> ALB["Application Load Balancer"]
-  ALB --> ECS["ECS Fargate / App Runner"]
-  ECS --> RDS["Amazon RDS PostgreSQL"]
-  ECS --> S3["Amazon S3"]
-  ECS --> CW["CloudWatch Logs"]
-  ECS --> SM["Secrets Manager"]
+  User["Users"] --> CF["CloudFront"]
+  CF --> S3["S3 Frontend Bucket"]
+  User --> ALB["Application Load Balancer"]
+  ALB --> ECS["ECS Fargate Backend"]
+  ECS --> SQS["SQS Batch Queue"]
+  EventBridge["EventBridge Schedule"] --> SQS
+  SQS --> Lambda["Lambda Worker"]
+  ECS --> CW["CloudWatch Logs / Metrics"]
+  Lambda --> CW
+  GitHub["GitHub Actions OIDC"] --> ECR["ECR"]
+  GitHub --> S3
+  GitHub --> ECS
 ```
 
-AWS 部分は sample config です。実 AWS アカウントや認証情報は不要です。
+## AWS Design Coverage
 
-## 認証流程
+- Frontend: S3 private bucket and CloudFront Origin Access Control.
+- Backend: ECS Fargate service behind an Application Load Balancer.
+- Network: VPC, public/private subnets, Internet Gateway, NAT Gateway, route tables.
+- Security: security groups, S3 public access block, HTTPS redirect, IAM roles and policies.
+- Operations: CloudWatch log groups, metrics dashboard, and alarms.
+- Async processing: SQS queue and dead-letter queue.
+- Scheduling: EventBridge rule for daily batch events.
+- Serverless helper: Lambda worker connected to SQS.
+- CI/CD: GitHub Actions OIDC role, ECR push, S3 sync, CloudFront invalidation, ECS deployment sample.
 
-この sample では実装を簡略化し、認証は未実装です。実案件では OIDC / SSO、RBAC、監査ログを追加する想定です。
+## Authentication and Authorization
 
-## 保守・運用の考え方
+The local sample does not implement user authentication. In a real environment, add OIDC/SSO, RBAC, audit logging, and least-privilege IAM. The Terraform sample includes infrastructure-level authorization examples such as GitHub OIDC, ECS task roles, Lambda roles, and S3 bucket policies.
 
-ヘルスチェック、アプリケーションログ、バッチログ、業務エラー処理を最小構成として実装しています。実運用では CloudWatch メトリクス、アラーム、構造化ログ、バックアップ、障害時 runbook を追加します。
+## Operations
+
+The application includes health check, application logs, batch logs, and operational logs page. The AWS sample extends this with CloudWatch log groups, alarms, and a dashboard. A production system should also include WAF, backup, incident runbooks, structured logs, and secret rotation.

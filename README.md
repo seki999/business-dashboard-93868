@@ -174,6 +174,8 @@ GitHub Actions は `.github/workflows/ci.yml` で checkout、Python setup、depe
 
 詳細は [docs/architecture.md](docs/architecture.md) と [infra/aws/README.md](infra/aws/README.md) を参照してください。
 
+Terraform 版 sample は [infra/aws/terraform/](infra/aws/terraform/) にあります。Frontend は S3 + CloudFront、Backend は ECS Fargate + ALB、さらに VPC/subnet/gateway、security group、IAM、CloudWatch、Lambda、SQS、EventBridge、GitHub Actions OIDC deploy role を含みます。
+
 ## セキュリティ考慮
 
 - real secret をコミットしない
