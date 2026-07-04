@@ -4,22 +4,24 @@
   <div>
     <p class="eyebrow">Portfolio Sample</p>
     <h1>社内業務改善・宅配データ管理ダッシュボード</h1>
+    <p class="lead">配送・在庫・問い合わせ・改善タスクを横断して確認する社内運用向け sample 画面です。</p>
   </div>
   <a class="button" href="/api/dashboard">API JSON</a>
 </header>
 
 <section class="metrics">
-  <article><span>本日注文数</span><strong>{{ summary.today_orders }}</strong></article>
-  <article><span>配送予定件数</span><strong>{{ summary.scheduled_deliveries }}</strong></article>
-  <article><span>問い合わせ件数</span><strong>{{ summary.feedback_count }}</strong></article>
-  <article><span>改善タスク件数</span><strong>{{ summary.open_tasks }}</strong></article>
-  <article><span>低在庫アラート</span><strong>{{ summary.low_stock_count }}</strong></article>
+  <article><span>本日注文数</span><strong>{{ summary.today_orders }}</strong><small>today</small></article>
+  <article><span>配送予定件数</span><strong>{{ summary.scheduled_deliveries }}</strong><small>scheduled</small></article>
+  <article><span>問い合わせ件数</span><strong>{{ summary.feedback_count }}</strong><small>feedback</small></article>
+  <article><span>改善タスク件数</span><strong>{{ summary.open_tasks }}</strong><small>open tasks</small></article>
+  <article><span>低在庫アラート</span><strong>{{ summary.low_stock_count }}</strong><small>stock alert</small></article>
 </section>
 
 <section class="split">
   <div>
     <h2>バッチステータス</h2>
     <p class="status {{ summary.batch_status }}">{{ summary.batch_status }}</p>
+    <p class="muted">低在庫・配送遅延・高優先度フィードバック・期限超過タスクを日次チェックします。</p>
     <button class="button" data-run-batch>Run Batch</button>
     <pre id="batch-result" class="result">待機中</pre>
   </div>

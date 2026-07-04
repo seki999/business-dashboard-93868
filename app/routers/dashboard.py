@@ -20,6 +20,7 @@ def dashboard_page(request: Request, db: Session = Depends(get_db)) -> HTMLRespo
     """Jinja2 テンプレートでトップ画面を表示します。"""
 
     return request.app.state.templates.TemplateResponse(
+        request,
         "dashboard.html",
-        {"request": request, "summary": get_dashboard_summary(db), "active": "dashboard"},
+        {"summary": get_dashboard_summary(db), "active": "dashboard"},
     )

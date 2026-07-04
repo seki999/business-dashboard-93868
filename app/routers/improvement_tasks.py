@@ -41,6 +41,7 @@ def tasks_page(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
     """業務改善タスク一覧画面を表示します。"""
 
     return request.app.state.templates.TemplateResponse(
+        request,
         "tasks.html",
-        {"request": request, "tasks": list_tasks(db), "active": "tasks"},
+        {"tasks": list_tasks(db), "active": "tasks"},
     )

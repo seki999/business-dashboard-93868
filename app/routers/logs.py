@@ -21,6 +21,7 @@ def logs_page(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
     """ログ一覧画面を表示します。"""
 
     return request.app.state.templates.TemplateResponse(
+        request,
         "logs.html",
-        {"request": request, "logs": list_logs(db), "active": "logs"},
+        {"logs": list_logs(db), "active": "logs"},
     )

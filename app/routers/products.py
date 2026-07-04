@@ -41,6 +41,7 @@ def products_page(request: Request, db: Session = Depends(get_db)) -> HTMLRespon
     """商品一覧画面を表示します。"""
 
     return request.app.state.templates.TemplateResponse(
+        request,
         "products.html",
-        {"request": request, "products": list_products(db), "active": "products"},
+        {"products": list_products(db), "active": "products"},
     )

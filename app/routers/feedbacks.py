@@ -41,6 +41,7 @@ def feedbacks_page(request: Request, db: Session = Depends(get_db)) -> HTMLRespo
     """フィードバック一覧画面を表示します。"""
 
     return request.app.state.templates.TemplateResponse(
+        request,
         "feedbacks.html",
-        {"request": request, "feedbacks": list_feedbacks(db), "active": "feedbacks"},
+        {"feedbacks": list_feedbacks(db), "active": "feedbacks"},
     )

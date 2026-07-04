@@ -20,7 +20,8 @@ body {
   display: grid;
   grid-template-columns: 240px 1fr;
   font-family: Inter, "Segoe UI", sans-serif;
-  background: var(--bg);
+  background:
+    linear-gradient(180deg, #eef3f6 0%, #f7f8fa 42%, #f6f7f9 100%);
   color: var(--ink);
 }
 
@@ -31,9 +32,23 @@ body {
 }
 
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 28px;
+}
+
+.brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #e5f5ef;
+  color: #146c63;
+  font-size: 13px;
 }
 
 nav {
@@ -57,11 +72,14 @@ nav a:hover {
 .content {
   padding: 32px;
   overflow-x: auto;
+  min-width: 0;
+  width: 100%;
+  max-width: 1060px;
 }
 
 .page-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 24px;
@@ -70,7 +88,18 @@ nav a:hover {
 h1 {
   margin: 0;
   font-size: 30px;
+  line-height: 1.22;
   letter-spacing: 0;
+  max-width: 820px;
+  overflow-wrap: anywhere;
+}
+
+.lead,
+.muted {
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 10px 0 0;
+  max-width: 820px;
 }
 
 h2 {
@@ -85,7 +114,7 @@ h2 {
 
 .metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 24px;
 }
@@ -97,6 +126,7 @@ section {
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 18px;
+  box-shadow: 0 12px 28px rgba(23, 32, 42, 0.06);
 }
 
 .metrics span {
@@ -111,6 +141,11 @@ section {
   margin-top: 8px;
 }
 
+.metrics small {
+  color: var(--muted);
+  font-weight: 700;
+}
+
 .split {
   display: grid;
   grid-template-columns: minmax(260px, 0.7fr) minmax(420px, 1.3fr);
@@ -121,6 +156,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  table-layout: fixed;
 }
 
 th,
@@ -129,6 +165,7 @@ td {
   padding: 12px 10px;
   text-align: left;
   vertical-align: top;
+  overflow-wrap: anywhere;
 }
 
 th {
@@ -191,6 +228,10 @@ th {
   }
 
   .split {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics {
     grid-template-columns: 1fr;
   }
 }

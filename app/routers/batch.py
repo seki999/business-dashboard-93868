@@ -21,6 +21,7 @@ def batch_page(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
     """バッチ実行結果を確認する画面を表示します。"""
 
     return request.app.state.templates.TemplateResponse(
+        request,
         "batch.html",
-        {"request": request, "logs": list_logs(db, 10), "active": "batch"},
+        {"logs": list_logs(db, 10), "active": "batch"},
     )

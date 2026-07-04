@@ -41,6 +41,7 @@ def deliveries_page(request: Request, db: Session = Depends(get_db)) -> HTMLResp
     """配送一覧画面を表示します。"""
 
     return request.app.state.templates.TemplateResponse(
+        request,
         "deliveries.html",
-        {"request": request, "deliveries": list_deliveries(db), "active": "deliveries"},
+        {"deliveries": list_deliveries(db), "active": "deliveries"},
     )
